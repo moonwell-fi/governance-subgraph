@@ -31,13 +31,13 @@ build:
 	yarn graph build
 
 deploy:
-	yarn graph deploy moonwell-fi/moonwell-governance-$(network) --access-token $(graph_access_token) --node https://api.thegraph.com/deploy/
+	yarn graph deploy moonwell-fi/governance-$(network) --access-token $(graph_access_token) --node https://api.thegraph.com/deploy/
 
 deploy-dev:
-	yarn graph deploy $(github_dev_profile)/moonwell-governance-$(network) --access-token $(graph_dev_access_token) --node https://api.thegraph.com/deploy/
+	yarn graph deploy $(github_dev_profile)/governance-$(network) --access-token $(graph_dev_access_token) --node https://api.thegraph.com/deploy/
 
 deploy-local:
-	yarn graph deploy $(github_dev_profile)/moonwell-governance-$(network) --node http://localhost:8020 --ipfs http://localhost:5001
+	yarn graph deploy $(github_dev_profile)/governance-$(network) --node http://localhost:8020 --ipfs http://localhost:5001
 
 deploy-satsuma:
 	yarn graph deploy governance-$(network) \
