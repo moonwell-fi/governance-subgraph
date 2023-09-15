@@ -12,6 +12,7 @@ import {
   VotingPeriodChanged,
   Governor as GovernorContract,
 } from '../generated/Governor/Governor'
+import { LogMessagePublished } from '../generated/Wormhole/Wormhole'
 import {
   Governor,
   Proposal,
@@ -19,6 +20,7 @@ import {
   Proposer,
   Vote,
   Voter,
+  Message,
 } from '../generated/schema'
 import config from '../config/config'
 import { BIGINT_ZERO, getOrElse, GovernanceVoteValue, ProposalState } from './helpers'
@@ -175,6 +177,20 @@ export function handleVotingPeriodChanged(event: VotingPeriodChanged): void {
   governor.save()
 }
 
+export function handleLogMessagePublished(event: LogMessagePublished): void {
+  let governor = getOrCreateGovernor()
+  let message = new Message(
+    event.transaction.hash.toHexString().concat('-').concat(event.logIndex.toString()),
+  )
+  Message.txnHash = event.transaction.hash
+  message.sender = event.params.sender
+  message.sequence = event.params.sequence
+  message.nonce = event.params.nonce.toI32()
+  message.payload = event.params.payload
+  message.consistencyLevel = event.params.consistencyLevel
+  message.save()
+}
+
 function getOrCreateGovernor(): Governor {
   let governor = Governor.load('1')
   if (!governor) {
@@ -200,6 +216,10 @@ function getOrCreateGovernor(): Governor {
     ).toI32()
     governor.breakGlassGuardian = getOrElse<Address>(
       contract.try_breakGlassGuardian(),
+      Address.fromString('0x0000000000000000000000000000000000000000'),
+    )
+    governor.timelock = getOrElse<Address>(
+      contract.try_timelock(),
       Address.fromString('0x0000000000000000000000000000000000000000'),
     )
     governor.save()

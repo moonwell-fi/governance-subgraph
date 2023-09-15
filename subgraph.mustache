@@ -43,3 +43,22 @@ dataSources:
           handler: handleVotingDelayedChanged
         - event: VotingPeriodChanged(uint256,uint256)
           handler: handleVotingPeriodChanged
+  - kind: ethereum/contract
+    name: Wormhole
+    network: {{ network }}
+    source:
+      address: '{{ wormholeAddr }}'
+      abi: Wormhole
+      startBlock: {{ wormholeStartBlock }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      file: ./src/governor.ts
+      entities: []
+      abis:
+        - name: Wormhole
+          file: ./abis/wormhole.json
+      eventHandlers:
+        - event: LogMessagePublished(indexed address,uint64,uint32,bytes,uint8)
+          handler: handleLogMessagePublished
