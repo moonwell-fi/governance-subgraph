@@ -1,0 +1,16 @@
+node_modules/
+.DS_STORE
+.idea/
+
+# subgraph specific
+generated/
+build/
+# generated from mustache
+subgraph.yaml
+config/config.ts
+# testing specific
+tests/.latest.json
+tests/.bin/
+
+.package-lock.json
+.yarn.json
