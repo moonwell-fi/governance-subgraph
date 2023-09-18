@@ -73,12 +73,12 @@ type Voter @entity {
 }
 
 type Message @entity {
+  # txn hash
   id: ID!
-  txnHash: Bytes!
-  proposalStateChange: ProposalStateChange!
-  sender: Bytes!
-  sequence: BigInt!
-  nonce: Int!
-  payload: Bytes!
-  consistencyLevel: Int!
+  proposalStateChange: ProposalStateChange
+  sender: Bytes
+  sequence: BigInt
+  nonce: Int
+  payload: Bytes
+  consistencyLevel: Int
 }
