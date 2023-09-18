@@ -12,6 +12,7 @@ import {
   VotingPeriodChanged,
   Governor as GovernorContract,
 } from '../generated/Governor/Governor'
+import { LogMessagePublished } from '../generated/Wormhole/Wormhole'
 import {
   Governor,
   Proposal,
@@ -19,9 +20,15 @@ import {
   Proposer,
   Vote,
   Voter,
+  Message,
 } from '../generated/schema'
 import config from '../config/config'
-import { BIGINT_ZERO, getOrElse, GovernanceVoteValue, ProposalState } from './helpers'
+import {
+  BIGINT_ZERO,
+  getOrElse,
+  GovernanceVoteValue,
+  ProposalState,
+} from './helpers'
 
 export function handleProposalCreated(event: ProposalCreated): void {
   let governor = getOrCreateGovernor()
@@ -175,6 +182,22 @@ export function handleVotingPeriodChanged(event: VotingPeriodChanged): void {
   governor.save()
 }
 
+export function handleLogMessagePublished(event: LogMessagePublished): void {
+  if (event.params.sender.toHexString().toLowerCase() != config.timelockAddr.toLowerCase()) {
+    return // only handle messages from our trusted sender (timelock address)
+  }
+  let message = new Message(
+    event.transaction.hash.toHexString(),
+  )
+  message.sender = event.params.sender
+  message.sequence = event.params.sequence
+  message.nonce = event.params.nonce.toI32()
+  message.payload = event.params.payload
+  message.consistencyLevel = event.params.consistencyLevel
+  message.timestamp = event.block.timestamp
+  message.save()
+}
+
 function getOrCreateGovernor(): Governor {
   let governor = Governor.load('1')
   if (!governor) {
@@ -202,6 +225,10 @@ function getOrCreateGovernor(): Governor {
       contract.try_breakGlassGuardian(),
       Address.fromString('0x0000000000000000000000000000000000000000'),
     )
+    governor.timelock = getOrElse<Address>(
+      contract.try_timelock(),
+      Address.fromString('0x0000000000000000000000000000000000000000'),
+    )
     governor.save()
   }
   return governor
@@ -212,9 +239,14 @@ function newProposalStateChange(
   proposalID: string,
   newState: string,
 ): ProposalStateChange {
-  let change = new ProposalStateChange(
-    event.transaction.hash.toHexString().concat('-').concat(event.logIndex.toString()),
-  )
+  let proposalStateChangeID = 
+    event.transaction.hash.toHexString().concat('-').concat(event.logIndex.toString());
+  let change = new ProposalStateChange(proposalStateChangeID)
+  let message = Message.load(event.transaction.hash.toHexString())
+  if (message) {
+    message.proposalStateChange = proposalStateChangeID
+    message.save()
+  }
   change.proposal = proposalID
   change.txnHash = event.transaction.hash
   change.blockNumber = event.block.number

@@ -7,6 +7,7 @@ type Governor @entity {
   proposalMaxOperations: Int!
   votingPeriod: Int!
   breakGlassGuardian: Bytes!
+  timelock: Bytes!
 }
 
 type Proposal @entity {
@@ -47,6 +48,7 @@ type ProposalStateChange @entity {
   blockNumber: BigInt!
   newState: ProposalState!
   queueEta: BigInt # only set this field when newState == QUEUED
+  messages: [Message!]! @derivedFrom(field: "proposalStateChange")
 }
 
 type Vote @entity {
@@ -68,4 +70,16 @@ type Proposer @entity {
 type Voter @entity {
   id: ID!
   votes: [Vote!]! @derivedFrom(field: "voter")
+}
+
+type Message @entity {
+  # txn hash
+  id: ID!
+  proposalStateChange: ProposalStateChange
+  sender: Bytes
+  sequence: BigInt
+  nonce: Int
+  payload: Bytes
+  consistencyLevel: Int
+  timestamp: BigInt
 }
