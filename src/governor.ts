@@ -194,6 +194,7 @@ export function handleLogMessagePublished(event: LogMessagePublished): void {
   message.nonce = event.params.nonce.toI32()
   message.payload = event.params.payload
   message.consistencyLevel = event.params.consistencyLevel
+  message.timestamp = event.block.timestamp
   message.save()
 }
 

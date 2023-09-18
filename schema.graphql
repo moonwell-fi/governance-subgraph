@@ -81,4 +81,5 @@ type Message @entity {
   nonce: Int
   payload: Bytes
   consistencyLevel: Int
+  timestamp: BigInt
 }
