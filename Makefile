@@ -2,8 +2,9 @@ github_dev_profile ?= $(GITHUB_DEV_PROFILE)
 graph_dev_access_token ?= $(GRAPH_DEV_ACCESS_TOKEN)
 graph_access_token ?= $(GRAPH_ACCESS_TOKEN)
 satsuma_access_token ?= $(SATSUMA_ACCESS_TOKEN)
+goldsky_access_token ?= $(GOLDSKY_ACCESS_TOKEN)
 
-major_version_label ?= 0.0.2
+major_version_label ?= 1.0.0
 minor_version_label ?= $(shell date +%Y-%m-%d-%H_%M_%S)
 
 build-docker:
@@ -45,17 +46,22 @@ deploy-satsuma:
 	--node https://app.satsuma.xyz/api/subgraphs/deploy \
 	--deploy-key $(satsuma_access_token)
 
+deploy-goldsky:
+	goldsky subgraph deploy \
+	governance-$(network)/$(major_version_label)-$(minor_version_label) \
+	--token $(goldsky_access_token)
+
 all:
-	$(MAKE) clean generate-config codegen deploy deploy-satsuma
+	$(MAKE) clean generate-config codegen build deploy deploy-satsuma deploy-goldsky
 
 dev:
-	$(MAKE) clean generate-config codegen deploy-dev deploy-satsuma
+	$(MAKE) clean generate-config codegen build deploy-dev deploy-satsuma deploy-goldsky
 
 prod:
-	$(MAKE) clean generate-config codegen deploy deploy-satsuma
+	$(MAKE) clean generate-config codegen build deploy deploy-satsuma deploy-goldsky
 
 local:
-	$(MAKE) clean generate-config codegen deploy-local
+	$(MAKE) clean generate-config codegen build deploy-local
 
 test:
 	graph test
