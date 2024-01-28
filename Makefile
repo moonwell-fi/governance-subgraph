@@ -52,16 +52,16 @@ deploy-goldsky:
 	--token $(goldsky_access_token)
 
 all:
-	$(MAKE) clean generate-config codegen deploy deploy-satsuma deploy-goldsky
+	$(MAKE) clean generate-config codegen build deploy deploy-satsuma deploy-goldsky
 
 dev:
-	$(MAKE) clean generate-config codegen deploy-dev deploy-satsuma deploy-goldsky
+	$(MAKE) clean generate-config codegen build deploy-dev deploy-satsuma deploy-goldsky
 
 prod:
-	$(MAKE) clean generate-config codegen deploy deploy-satsuma deploy-goldsky
+	$(MAKE) clean generate-config codegen build deploy deploy-satsuma deploy-goldsky
 
 local:
-	$(MAKE) clean generate-config codegen deploy-local
+	$(MAKE) clean generate-config codegen build deploy-local
 
 test:
 	graph test
