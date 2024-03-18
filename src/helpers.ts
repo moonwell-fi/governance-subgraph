@@ -5,6 +5,7 @@ import {
 import config from '../config/config'
 
 export const BIGINT_ZERO = BigInt.fromI32(0)
+export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000'
 
 export namespace ProposalState {
   export const CREATED = 'CREATED'
