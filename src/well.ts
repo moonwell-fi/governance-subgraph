@@ -12,8 +12,24 @@ import config from '../config/config'
 import {
   BIGINT_ZERO,
   ADDRESS_ZERO,
-  getOrElse,
+  getOrCreateCirculatingSupplyDailySnapshot,
 } from './helpers'
+
+function snapshotCirculatingSupply(blockTimestamp: i32): void {
+  let snapshot = getOrCreateCirculatingSupplyDailySnapshot(
+    blockTimestamp,
+    config.WELLAddr
+  )
+  let contract = WELLContract.bind(Address.fromString(config.WELLAddr))
+  let totalSupply = contract.totalSupply()
+  for (let i = 0; i < config.WELLCircSupplyExcludes.length; i++) {
+    let excludeAddress = Address.fromString(config.WELLCircSupplyExcludes[i]);
+    let balance = contract.balanceOf(excludeAddress);
+    totalSupply = totalSupply.minus(balance);
+  }
+  snapshot.circulatingSupply = totalSupply  
+  snapshot.save()
+}
 
 export function handleTransfer(event: Transfer): void {
   let fromAccount = Account.load(event.params.from.toHexString())
@@ -45,6 +61,7 @@ export function handleTransfer(event: Transfer): void {
   }
   toAccount.WELLBalance = toAccount.WELLBalance.plus(event.params.amount)
   toAccount.save()
+  snapshotCirculatingSupply(event.block.timestamp.toI32())
 }
 
 export function handleDelegateChanged(event: DelegateChanged): void {

@@ -17,7 +17,7 @@ import config from '../config/config'
 import {
   BIGINT_ZERO,
   ADDRESS_ZERO,
-  getOrElse,
+  getOrCreateCirculatingSupplyDailySnapshot,
 } from './helpers'
 
 export function handleDeposit(event: Deposit): void {
@@ -54,6 +54,22 @@ export function handleWithdraw(event: Withdraw): void {
   account.save()
 }
 
+function snapshotCirculatingSupply(blockTimestamp: i32): void {
+  let snapshot = getOrCreateCirculatingSupplyDailySnapshot(
+    blockTimestamp,
+    config.xWELLAddr
+  )
+  let contract = xWELLContract.bind(Address.fromString(config.WELLAddr))
+  let totalSupply = contract.totalSupply()
+  for (let i = 0; i < config.xWELLCircSupplyExcludes.length; i++) {
+    let excludeAddress = Address.fromString(config.xWELLCircSupplyExcludes[i]);
+    let balance = contract.balanceOf(excludeAddress);
+    totalSupply = totalSupply.minus(balance);
+  }
+  snapshot.circulatingSupply = totalSupply  
+  snapshot.save()
+}
+
 export function handleTransfer(event: Transfer): void {
   let fromAccount = Account.load(event.params.from.toHexString())
   if (fromAccount == null) {
@@ -84,6 +100,7 @@ export function handleTransfer(event: Transfer): void {
   }
   toAccount.xWELLBalance = toAccount.xWELLBalance.plus(event.params.value)
   toAccount.save()
+  snapshotCirculatingSupply(event.block.timestamp.toI32())
 }
 
 export function handleDelegateChanged(event: DelegateChanged): void {
