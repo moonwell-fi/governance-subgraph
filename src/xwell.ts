@@ -59,15 +59,17 @@ function snapshotCirculatingSupply(blockTimestamp: i32): void {
     blockTimestamp,
     config.xWELLAddr
   )
-  let contract = xWELLContract.bind(Address.fromString(config.WELLAddr))
-  let totalSupply = contract.totalSupply()
-  for (let i = 0; i < config.xWELLCircSupplyExcludes.length; i++) {
-    let excludeAddress = Address.fromString(config.xWELLCircSupplyExcludes[i]);
-    let balance = contract.balanceOf(excludeAddress);
-    totalSupply = totalSupply.minus(balance);
+  if (snapshot.circulatingSupply == BIGINT_ZERO) {
+    let contract = xWELLContract.bind(Address.fromString(config.WELLAddr))
+    let totalSupply = contract.totalSupply()
+    for (let i = 0; i < config.xWELLCircSupplyExcludes.length; i++) {
+      let excludeAddress = Address.fromString(config.xWELLCircSupplyExcludes[i]);
+      let balance = contract.balanceOf(excludeAddress);
+      totalSupply = totalSupply.minus(balance);
+    }
+    snapshot.circulatingSupply = totalSupply
+    snapshot.save()
   }
-  snapshot.circulatingSupply = totalSupply  
-  snapshot.save()
 }
 
 export function handleTransfer(event: Transfer): void {
