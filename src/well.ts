@@ -16,6 +16,7 @@ import {
 } from './helpers'
 
 function snapshotCirculatingSupply(blockTimestamp: i32): void {
+  if (blockTimestamp < 1704096000) return; // Don't snapshot before 01-01-2024
   let snapshot = getOrCreateCirculatingSupplyDailySnapshot(
     blockTimestamp,
     config.WELLAddr
