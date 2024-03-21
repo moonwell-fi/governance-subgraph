@@ -61,7 +61,7 @@ function snapshotCirculatingSupply(blockTimestamp: i32): void {
     config.xWELLAddr
   )
   if (snapshot.circulatingSupply == BIGINT_ZERO) {
-    let contract = xWELLContract.bind(Address.fromString(config.WELLAddr))
+    let contract = xWELLContract.bind(Address.fromString(config.xWELLAddr))
     let totalSupply = contract.totalSupply()
     for (let i = 0; i < config.xWELLCircSupplyExcludes.length; i++) {
       let excludeAddress = Address.fromString(config.xWELLCircSupplyExcludes[i]);
