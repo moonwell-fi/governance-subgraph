@@ -99,6 +99,8 @@ dataSources:
       abis:
         - name: WELL
           file: ./abis/well.json
+        - name: xWELL
+          file: ./abis/xwell.json
       eventHandlers:
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
@@ -120,6 +122,8 @@ dataSources:
       file: ./src/xwell.ts
       entities: []
       abis:
+        - name: WELL
+          file: ./abis/well.json
         - name: xWELL
           file: ./abis/xwell.json
       eventHandlers:

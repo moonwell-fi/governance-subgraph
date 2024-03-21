@@ -107,7 +107,7 @@ export function handleTransfer(event: Transfer): void {
   toAccount.xWELLBalance = toAccount.xWELLBalance.plus(event.params.value)
   toAccount.save()
   snapshotCirculatingSupplyXwell(event.block.timestamp.toI32())
-  if (config.WELLAddr != ADDRESS_ZERO) {
+  if ((config.WELLAddr != ADDRESS_ZERO) && (event.block.number.ge(config.WELLStartBlock))) {
     snapshotCirculatingSupplyWell(event.block.timestamp.toI32())
   }
 }
