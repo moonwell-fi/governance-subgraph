@@ -6,6 +6,9 @@ import {
   xWELL as xWELLContract,
 } from '../generated/xWELL/xWELL'
 import {
+  snapshotCirculatingSupplyWell
+} from './well'
+import {
   Deposit,
   Withdraw,
   Lockbox as LockboxContract,
@@ -54,23 +57,23 @@ export function handleWithdraw(event: Withdraw): void {
   account.save()
 }
 
-function snapshotCirculatingSupply(blockTimestamp: i32): void {
+export function snapshotCirculatingSupplyXwell(blockTimestamp: i32): void {
   if (blockTimestamp < 1704096000) return; // Don't snapshot before 01-01-2024
   let snapshot = getOrCreateCirculatingSupplyDailySnapshot(
     blockTimestamp,
     config.xWELLAddr
   )
-  if (snapshot.circulatingSupply == BIGINT_ZERO) {
-    let contract = xWELLContract.bind(Address.fromString(config.xWELLAddr))
-    let totalSupply = contract.totalSupply()
-    for (let i = 0; i < config.xWELLCircSupplyExcludes.length; i++) {
-      let excludeAddress = Address.fromString(config.xWELLCircSupplyExcludes[i]);
-      let balance = contract.balanceOf(excludeAddress);
-      totalSupply = totalSupply.minus(balance);
-    }
-    snapshot.circulatingSupply = totalSupply
-    snapshot.save()
+  if (snapshot.captureTimestamp != BIGINT_ZERO) return; // Already captured
+  let contract = xWELLContract.bind(Address.fromString(config.xWELLAddr))
+  let totalSupply = contract.totalSupply()
+  for (let i = 0; i < config.xWELLCircSupplyExcludes.length; i++) {
+    let excludeAddress = Address.fromString(config.xWELLCircSupplyExcludes[i]);
+    let balance = contract.balanceOf(excludeAddress);
+    totalSupply = totalSupply.minus(balance);
   }
+  snapshot.circulatingSupply = totalSupply
+  snapshot.captureTimestamp = BigInt.fromI32(blockTimestamp)
+  snapshot.save()
 }
 
 export function handleTransfer(event: Transfer): void {
@@ -103,7 +106,8 @@ export function handleTransfer(event: Transfer): void {
   }
   toAccount.xWELLBalance = toAccount.xWELLBalance.plus(event.params.value)
   toAccount.save()
-  snapshotCirculatingSupply(event.block.timestamp.toI32())
+  snapshotCirculatingSupplyXwell(event.block.timestamp.toI32())
+  snapshotCirculatingSupplyWell(event.block.timestamp.toI32())
 }
 
 export function handleDelegateChanged(event: DelegateChanged): void {

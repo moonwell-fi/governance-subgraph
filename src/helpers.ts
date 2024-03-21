@@ -51,6 +51,7 @@ export function getOrCreateCirculatingSupplyDailySnapshot(
     log.warning('[getOrCreateCirculatingSupplyDailySnapshot] Creating new snapshot for {}', [snapshotID])
     snapshot = new CirculatingSupplyDailySnapshot(snapshotID)
     snapshot.circulatingSupply = BIGINT_ZERO
+    snapshot.captureTimestamp = BIGINT_ZERO
     snapshot.save()
   }
   return snapshot

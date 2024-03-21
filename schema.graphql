@@ -114,7 +114,8 @@ A daily snapshot of the circulating supply of WELL, MFAM, or xWELL
 type CirculatingSupplyDailySnapshot @entity {
   " {token address}-{epoch days} "
   id: ID!
-
   "Current circulating supply"
   circulatingSupply: BigInt!
+  "Captured at timestamp"
+  captureTimestamp: BigInt!
 }

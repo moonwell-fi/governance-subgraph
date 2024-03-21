@@ -6,6 +6,9 @@ import {
   WELL as WELLContract,
 } from '../generated/WELL/WELL'
 import {
+  snapshotCirculatingSupplyXwell
+} from './xwell'
+import {
   Account
 } from '../generated/schema'
 import config from '../config/config'
@@ -15,12 +18,13 @@ import {
   getOrCreateCirculatingSupplyDailySnapshot,
 } from './helpers'
 
-function snapshotCirculatingSupply(blockTimestamp: i32): void {
+export function snapshotCirculatingSupplyWell(blockTimestamp: i32): void {
   if (blockTimestamp < 1704096000) return; // Don't snapshot before 01-01-2024
   let snapshot = getOrCreateCirculatingSupplyDailySnapshot(
     blockTimestamp,
     config.WELLAddr
   )
+  if (snapshot.captureTimestamp != BIGINT_ZERO) return; // Already captured
   let contract = WELLContract.bind(Address.fromString(config.WELLAddr))
   let totalSupply = contract.totalSupply()
   for (let i = 0; i < config.WELLCircSupplyExcludes.length; i++) {
@@ -28,7 +32,8 @@ function snapshotCirculatingSupply(blockTimestamp: i32): void {
     let balance = contract.balanceOf(excludeAddress);
     totalSupply = totalSupply.minus(balance);
   }
-  snapshot.circulatingSupply = totalSupply  
+  snapshot.circulatingSupply = totalSupply
+  snapshot.captureTimestamp = BigInt.fromI32(blockTimestamp)
   snapshot.save()
 }
 
@@ -62,7 +67,8 @@ export function handleTransfer(event: Transfer): void {
   }
   toAccount.WELLBalance = toAccount.WELLBalance.plus(event.params.amount)
   toAccount.save()
-  snapshotCirculatingSupply(event.block.timestamp.toI32())
+  snapshotCirculatingSupplyWell(event.block.timestamp.toI32())
+  snapshotCirculatingSupplyXwell(event.block.timestamp.toI32())
 }
 
 export function handleDelegateChanged(event: DelegateChanged): void {
