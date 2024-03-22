@@ -83,3 +83,41 @@ type Message @entity {
   consistencyLevel: Int
   timestamp: BigInt
 }
+
+"""
+Account is an ETH address that has interacted with the xWELL token
+"""
+type Account @entity {
+  "User ETH address"
+  id: ID!
+  "WELL Delegate"
+  delegatedTo: Account
+  "WELL Voting Power"
+  votingPower: BigInt!
+  "WELL Balance"
+  WELLBalance: BigInt!
+  "xWELL Delegate"
+  xdelegatedTo: Account
+  "xWELL Voting Power"
+  xvotingPower: BigInt!
+  "xWELL Balance"
+  xWELLBalance: BigInt!
+  "WWELL Balance"
+  WWELLBalance: BigInt!
+  "Total Deposits"
+  totalDeposits: BigInt!
+  "Total Withdrawals"
+  totalWithdrawals: BigInt!
+}
+
+"""
+A daily snapshot of the circulating supply of WELL, MFAM, or xWELL
+"""
+type CirculatingSupplyDailySnapshot @entity {
+  " {token address}-{epoch days} "
+  id: ID!
+  "Current circulating supply"
+  circulatingSupply: BigInt!
+  "Captured at timestamp"
+  captureTimestamp: BigInt!
+}

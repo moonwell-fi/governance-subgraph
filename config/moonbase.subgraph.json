@@ -3,5 +3,13 @@
   "governorAddr": "0x5713dd9a2b2ce515cf9232f48b457aebfb04b292",
   "governorStartBlock": 4763313,
   "wormholeAddr": "0xa5B7D85a8f27dd7907dc8FdC21FA5657D5E2F901",
-  "wormholeStartBlock": 4763313
+  "wormholeStartBlock": 4763313,
+  "WELLAddr": "0x96d50c8b4072A1246d40c4455D7b6D748f7D4BD3",
+  "WELLStartBlock": 4763312,
+  "xWELLAddr": "0xE8F339C51cb2700113ec6ef552eE1D6cCA3BfB95",
+  "xWELLStartBlock": 6158357,
+  "WWELLAddr": "0x0000000000000000000000000000000000000000",
+  "WWELLStartBlock": 2147483646,
+  "lockboxAddr": "0x751E27d340EFe99e35C4E68f9c3dF94BB4BE2aEA",
+  "lockboxStartBlock": 6158361
 }

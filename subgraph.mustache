@@ -62,3 +62,93 @@ dataSources:
       eventHandlers:
         - event: LogMessagePublished(indexed address,uint64,uint32,bytes,uint8)
           handler: handleLogMessagePublished
+  - kind: ethereum/contract
+    name: Lockbox
+    network: {{ network }}
+    source:
+      address: '{{ lockboxAddr }}'
+      abi: Lockbox
+      startBlock: {{ lockboxStartBlock }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      file: ./src/xwell.ts
+      entities: []
+      abis:
+        - name: Lockbox
+          file: ./abis/lockbox.json
+      eventHandlers:
+        - event: Withdraw(address,uint256)
+          handler: handleWithdraw
+        - event: Deposit(address,uint256)
+          handler: handleDeposit
+  - kind: ethereum/contract
+    name: WELL
+    network: {{ network }}
+    source:
+      address: '{{ WELLAddr }}'
+      abi: WELL
+      startBlock: {{ WELLStartBlock }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      file: ./src/well.ts
+      entities: []
+      abis:
+        - name: WELL
+          file: ./abis/well.json
+        - name: xWELL
+          file: ./abis/xwell.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+        - event: DelegateChanged(indexed address,indexed address,indexed address)
+          handler: handleDelegateChanged
+        - event: DelegateVotesChanged(indexed address,uint256,uint256)
+          handler: handleDelegateVotesChanged
+  - kind: ethereum/contract
+    name: xWELL
+    network: {{ network }}
+    source:
+      address: '{{ xWELLAddr }}'
+      abi: xWELL
+      startBlock: {{ xWELLStartBlock }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      file: ./src/xwell.ts
+      entities: []
+      abis:
+        - name: WELL
+          file: ./abis/well.json
+        - name: xWELL
+          file: ./abis/xwell.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+        - event: DelegateChanged(indexed address,indexed address,indexed address)
+          handler: handleDelegateChanged
+        - event: DelegateVotesChanged(indexed address,uint256,uint256)
+          handler: handleDelegateVotesChanged
+  - kind: ethereum/contract
+    name: WormholeWELL
+    network: {{ network }}
+    source:
+      address: '{{ WWELLAddr }}'
+      abi: WormholeWELL
+      startBlock: {{ WWELLStartBlock }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      file: ./src/wwell.ts
+      entities: []
+      abis:
+        - name: WormholeWELL
+          file: ./abis/well.wormhole.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
