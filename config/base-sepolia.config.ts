@@ -10,6 +10,7 @@ const config = new Config(
   [
     '0x0000000000000000000000000000000000000000', // Burn Address
   ],
+  [],
   '0xE8F339C51cb2700113ec6ef552eE1D6cCA3BfB95',
   BigInt.fromI32(6643795),
   [

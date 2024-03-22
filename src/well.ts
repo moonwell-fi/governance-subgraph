@@ -6,6 +6,12 @@ import {
   WELL as WELLContract,
 } from '../generated/WELL/WELL'
 import {
+  xWELL as xWELLContract,
+} from '../generated/xWELL/xWELL'
+import {
+  WormholeWELL as WormholeWELLContract,
+} from '../generated/WormholeWELL/WormholeWELL'
+import {
   snapshotCirculatingSupplyXwell
 } from './xwell'
 import {
@@ -32,6 +38,12 @@ export function snapshotCirculatingSupplyWell(blockTimestamp: i32): void {
     let balance = contract.balanceOf(excludeAddress);
     totalSupply = totalSupply.minus(balance);
   }
+  let WWELLcontract = WormholeWELLContract.bind(Address.fromString(config.WWELLAddr))
+  for (let i = 0; i < config.WELLBaseExtraExcludes.length; i++) {
+    let excludeAddress = Address.fromString(config.WELLBaseExtraExcludes[i]);
+    let balance = WWELLcontract.balanceOf(excludeAddress);
+    totalSupply = totalSupply.minus(balance);
+  }
   snapshot.circulatingSupply = totalSupply
   snapshot.captureTimestamp = BigInt.fromI32(blockTimestamp)
   snapshot.save()
@@ -47,6 +59,7 @@ export function handleTransfer(event: Transfer): void {
     fromAccount.xWELLBalance = BIGINT_ZERO
     fromAccount.delegatedTo = ADDRESS_ZERO
     fromAccount.xdelegatedTo = ADDRESS_ZERO
+    fromAccount.WWELLBalance = BIGINT_ZERO
     fromAccount.totalDeposits = BIGINT_ZERO
     fromAccount.totalWithdrawals = BIGINT_ZERO
   }
@@ -62,6 +75,7 @@ export function handleTransfer(event: Transfer): void {
     toAccount.xWELLBalance = BIGINT_ZERO
     toAccount.delegatedTo = ADDRESS_ZERO
     toAccount.xdelegatedTo = ADDRESS_ZERO
+    toAccount.WWELLBalance = BIGINT_ZERO
     toAccount.totalDeposits = BIGINT_ZERO
     toAccount.totalWithdrawals = BIGINT_ZERO
   }
@@ -83,6 +97,7 @@ export function handleDelegateChanged(event: DelegateChanged): void {
     account.xWELLBalance = BIGINT_ZERO
     account.delegatedTo = event.params.toDelegate.toHexString()
     account.xdelegatedTo = ADDRESS_ZERO
+    account.WWELLBalance = BIGINT_ZERO
     account.totalDeposits = BIGINT_ZERO
     account.totalWithdrawals = BIGINT_ZERO
     account.save()
@@ -102,6 +117,7 @@ export function handleDelegateVotesChanged(event: DelegateVotesChanged): void {
     account.xdelegatedTo = ADDRESS_ZERO
     account.totalDeposits = BIGINT_ZERO
     account.totalWithdrawals = BIGINT_ZERO
+    account.WWELLBalance = BIGINT_ZERO
     account.votingPower = event.params.newBalance
     account.xvotingPower = BIGINT_ZERO
     account.save()

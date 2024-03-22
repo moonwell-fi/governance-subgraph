@@ -19,6 +19,7 @@ const config = new Config(
     '0x79a1a71786a325db7Fe70bbF080a1ee046F53c74', // Solarbeam Rewarder
     '0x017eFfFd8ABea3B1891f81e7c0E5166458B3584D', // F-MOVR-PARAM
   ],
+  [],
   '0x0000000000000000000000000000000000000000',
   BigInt.fromI32(2147483646),
   [

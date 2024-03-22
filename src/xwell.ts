@@ -86,6 +86,7 @@ export function handleTransfer(event: Transfer): void {
     fromAccount.xWELLBalance = BIGINT_ZERO
     fromAccount.delegatedTo = ADDRESS_ZERO
     fromAccount.xdelegatedTo = ADDRESS_ZERO
+    fromAccount.WWELLBalance = BIGINT_ZERO
     fromAccount.totalDeposits = BIGINT_ZERO
     fromAccount.totalWithdrawals = BIGINT_ZERO
   }
@@ -101,6 +102,7 @@ export function handleTransfer(event: Transfer): void {
     toAccount.xWELLBalance = BIGINT_ZERO
     toAccount.delegatedTo = ADDRESS_ZERO
     toAccount.xdelegatedTo = ADDRESS_ZERO
+    toAccount.WWELLBalance = BIGINT_ZERO
     toAccount.totalDeposits = BIGINT_ZERO
     toAccount.totalWithdrawals = BIGINT_ZERO
   }
@@ -122,6 +124,7 @@ export function handleDelegateChanged(event: DelegateChanged): void {
     account.xWELLBalance = BIGINT_ZERO
     account.delegatedTo = ADDRESS_ZERO
     account.xdelegatedTo = event.params.toDelegate.toHexString()
+    account.WWELLBalance = BIGINT_ZERO
     account.totalDeposits = BIGINT_ZERO
     account.totalWithdrawals = BIGINT_ZERO
     account.save()
@@ -139,6 +142,7 @@ export function handleDelegateVotesChanged(event: DelegateVotesChanged): void {
     account.xWELLBalance = BIGINT_ZERO
     account.delegatedTo = ADDRESS_ZERO
     account.xdelegatedTo = ADDRESS_ZERO
+    account.WWELLBalance = BIGINT_ZERO
     account.totalDeposits = BIGINT_ZERO
     account.totalWithdrawals = BIGINT_ZERO
     account.votingPower = BIGINT_ZERO
