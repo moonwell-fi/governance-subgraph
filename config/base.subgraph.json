@@ -1,5 +1,5 @@
 {
-  "network": "base-sepolia",
+  "network": "base",
   "governorAddr": "0x0000000000000000000000000000000000000000",
   "governorStartBlock": 2147483646,
   "wormholeAddr": "0xbebdb6C8ddC678FfA9f8748f85C815C556Dd8ac6",
