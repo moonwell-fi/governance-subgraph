@@ -17,6 +17,7 @@ export namespace ProposalState {
   export const CANCELED = 'CANCELED'
   export const EXECUTED = 'EXECUTED'
   export const QUEUED = 'QUEUED'
+  export const REBROADCASTED = 'REBROADCASTED'
 }
 
 export namespace GovernanceVoteValue {

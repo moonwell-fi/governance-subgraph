@@ -10,6 +10,51 @@ type Governor @entity {
   timelock: Bytes!
 }
 
+type MultiGovernor @entity {
+  id: ID!
+  proposalCount: Int!
+  quorumVotes: BigInt!
+  proposalThreshold: BigInt!
+  votingPeriod: Int!
+  breakGlassGuardian: Bytes!
+  pauseGuardian: Bytes!
+}
+
+type VoteCollector @entity {
+  # {vote collector address}-{chain id}
+  id: ID!
+  proposalCount: Int!
+}
+
+type CrossChainProposal @entity {
+  # {vote collector address}-{proposal id}
+  id: ID!
+  voteCollector: VoteCollector!
+  proposalID: BigInt!
+  proposalIDOffset: BigInt!
+  startTimestamp: BigInt!
+  endTimestamp: BigInt!
+  voteCollectionEndTimestamp: BigInt!
+  startBlock: BigInt!
+  forVotes: BigInt!
+  againstVotes: BigInt!
+  abstainVotes: BigInt!
+  totalVotes: BigInt!
+  broadcastTimestamp: BigInt!
+}
+
+type CrossChainVoteTotal @entity {
+  # {source chain}-{proposal id}
+  id: ID!
+  proposal: Proposal!
+  blockNumber: BigInt!
+  sourceChain: BigInt!
+  forVotes: BigInt!
+  againstVotes: BigInt!
+  abstainVotes: BigInt!
+  broadcastTimestamp: BigInt!
+}
+
 type Proposal @entity {
   # proposal id
   id: ID!
@@ -18,7 +63,6 @@ type Proposal @entity {
   proposer: Proposer!
   targets: [Bytes!]!
   values: [BigInt!]!
-  signatures: [String!]!
   calldatas: [Bytes!]!
   startTimestamp: BigInt!
   endTimestamp: BigInt!
@@ -29,6 +73,10 @@ type Proposal @entity {
   againstVotes: BigInt!
   abstainVotes: BigInt!
   totalVotes: BigInt!
+  remoteForVotes: BigInt!
+  remoteAgainstVotes: BigInt!
+  remoteAbstainVotes: BigInt!
+  remoteTotalVotes: BigInt!
   description: String!
   stateChanges: [ProposalStateChange!]! @derivedFrom(field: "proposal")
 }
@@ -56,6 +104,7 @@ type Vote @entity {
   id: ID!
   txnHash: Bytes!
   blockNumber: BigInt!
+  timestamp: BigInt!
   voter: Voter!
   proposal: Proposal!
   voteValue: Int!

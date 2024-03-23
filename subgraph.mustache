@@ -44,6 +44,68 @@ dataSources:
         - event: VotingPeriodChanged(uint256,uint256)
           handler: handleVotingPeriodChanged
   - kind: ethereum/contract
+    name: MultiGovernor
+    network: {{ network }}
+    source:
+      address: '{{ multiGovernorAddr }}'
+      abi: MultiGovernor
+      startBlock: {{ multiGovernorStartBlock }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      file: ./src/multigovernor.ts
+      entities: []
+      abis:
+        - name: MultiGovernor
+          file: ./abis/multigovernor.json
+      eventHandlers:
+        - event: ProposalCanceled(uint256)
+          handler: handleProposalCanceled
+        - event: ProposalCreated(uint256,address,address[],uint256[],bytes[],uint256,uint256,string)
+          handler: handleProposalCreated
+        - event: ProposalExecuted(uint256)
+          handler: handleProposalExecuted
+        - event: ProposalQueued(uint256,uint256)
+          handler: handleProposalQueued
+        - event: ProposalRebroadcasted(uint256,bytes)
+          handler: handleProposalRebroadcasted
+        - event: VoteCast(address,uint256,uint8,uint256)
+          handler: handleVoteCast
+        - event: BreakGlassGuardianChanged(address,address)
+          handler: handleBreakGlassGuardianChanged
+        - event: ProposalThresholdChanged(uint256,uint256)
+          handler: handleProposalThresholdChanged
+        - event: QuroumVotesChanged(uint256,uint256)
+          handler: handleQuorumVotesChanged
+        - event: VotingPeriodChanged(uint256,uint256)
+          handler: handleVotingPeriodChanged
+        - event: CrossChainVoteCollected(uint256,uint16,uint256,uint256,uint256)
+          handler: handleCrossChainVoteCollected
+  - kind: ethereum/contract
+    name: VoteCollector
+    network: {{ network }}
+    source:
+      address: '{{ voteCollectorAddr }}'
+      abi: VoteCollector
+      startBlock: {{ voteCollectorStartBlock }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      file: ./src/votecollector.ts
+      entities: []
+      abis:
+        - name: VoteCollector
+          file: ./abis/votecollector.json
+      eventHandlers:
+        - event: ProposalCreated(uint256,uint256,uint256,uint256)
+          handler: handleProposalCreated
+        - event: VoteCast(address,uint256,uint8,uint256)
+          handler: handleVoteCast
+        - event: VotesEmitted(uint256,uint256,uint256,uint256)
+          handler: handleVotesEmitted
+  - kind: ethereum/contract
     name: Wormhole
     network: {{ network }}
     source:
