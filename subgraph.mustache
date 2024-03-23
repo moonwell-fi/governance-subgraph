@@ -82,33 +82,29 @@ dataSources:
           handler: handleVotingPeriodChanged
         - event: CrossChainVoteCollected(uint256,uint16,uint256,uint256,uint256)
           handler: handleCrossChainVoteCollected
-#  - kind: ethereum/contract
-#    name: VoteCollector
-#    network: {{ network }}
-#    source:
-#      address: '{{ voteCollectorAddr }}'
-#      abi: VoteCollector
-#      startBlock: {{ voteCollectorStartBlock }}
-#    mapping:
-#      kind: ethereum/events
-#      apiVersion: 0.0.7
-#      language: wasm/assemblyscript
-#      file: ./src/votecollector.ts
-#      entities: []
-#      abis:
-#        - name: VoteCollector
-#          file: ./abis/votecollector.json
-#      eventHandlers:
-#        - event: BridgeOutFailed(uint16,bytes,uint256)
-#          handler: handleBridgeOutFailed
-#        - event: BridgeOutSuccess(uint256,dst,bytes)
-#          handler: handleBridgeOutSuccess
-#        - event: ProposalCreated(uint256,uint256,uint256,uint256)
-#          handler: handleProposalCreated
-#        - event: VoteCast(address,uint256,uint8,uint256)
-#          handler: handleVoteCast
-#        - event: VotesEmitted(uint256,uint256,uint256,uint256)
-#          handler: handleVotesEmitted
+  - kind: ethereum/contract
+    name: VoteCollector
+    network: {{ network }}
+    source:
+      address: '{{ voteCollectorAddr }}'
+      abi: VoteCollector
+      startBlock: {{ voteCollectorStartBlock }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      file: ./src/votecollector.ts
+      entities: []
+      abis:
+        - name: VoteCollector
+          file: ./abis/votecollector.json
+      eventHandlers:
+        - event: ProposalCreated(uint256,uint256,uint256,uint256)
+          handler: handleProposalCreated
+        - event: VoteCast(address,uint256,uint8,uint256)
+          handler: handleVoteCast
+        - event: VotesEmitted(uint256,uint256,uint256,uint256)
+          handler: handleVotesEmitted
   - kind: ethereum/contract
     name: Wormhole
     network: {{ network }}

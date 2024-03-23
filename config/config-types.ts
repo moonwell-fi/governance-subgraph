@@ -6,6 +6,7 @@ export class Config {
     public readonly multiGovernorAddr: string,
     public readonly proposalOffset: BigInt,
     public readonly voteCollectorAddr: string,
+    public readonly voteCollectorChainID: BigInt,
     public readonly wormholeAddr: string,
     public readonly timelockAddr: string,
     public readonly WELLAddr: string,

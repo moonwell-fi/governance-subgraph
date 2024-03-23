@@ -64,6 +64,10 @@ export function handleProposalCreated(event: ProposalCreated): void {
   proposal.againstVotes = BigInt.zero()
   proposal.abstainVotes = BigInt.zero()
   proposal.totalVotes = BigInt.zero()
+  proposal.remoteForVotes = BigInt.zero()
+  proposal.remoteAgainstVotes = BigInt.zero()
+  proposal.remoteAbstainVotes = BigInt.zero()
+  proposal.remoteTotalVotes = BigInt.zero()
   proposal.save()
 
   newProposalStateChange(event, proposalID, ProposalState.CREATED)
@@ -143,14 +147,13 @@ export function handleCrossChainVoteCollected(event: CrossChainVoteCollected): v
     crossChainVoteTotal.forVotes = event.params.forVotes
     crossChainVoteTotal.againstVotes = event.params.againstVotes
     crossChainVoteTotal.abstainVotes = event.params.abstainVotes
-    crossChainVoteTotal.collectedTimestamp = event.block.timestamp
+    crossChainVoteTotal.broadcastTimestamp = event.block.timestamp
     crossChainVoteTotal.blockNumber = event.block.number
-    proposal.forVotes = proposal.forVotes.plus(event.params.forVotes)
-    proposal.againstVotes = proposal.againstVotes.plus(event.params.againstVotes)
-    proposal.abstainVotes = proposal.abstainVotes.plus(event.params.abstainVotes)
-    proposal.totalVotes = proposal.totalVotes.plus(
-      proposal.totalVotes
-      .plus(event.params.forVotes)
+    proposal.remoteForVotes = proposal.remoteForVotes.plus(event.params.forVotes)
+    proposal.remoteAgainstVotes = proposal.remoteAgainstVotes.plus(event.params.againstVotes)
+    proposal.remoteAbstainVotes = proposal.remoteAbstainVotes.plus(event.params.abstainVotes)
+    proposal.remoteTotalVotes = proposal.remoteTotalVotes.plus(
+      event.params.forVotes
       .plus(event.params.againstVotes)
       .plus(event.params.abstainVotes)
     )
@@ -196,6 +199,7 @@ export function handleVoteCast(event: VoteCast): void {
   )
   vote.txnHash = event.transaction.hash
   vote.blockNumber = event.block.number
+  vote.timestamp = event.block.timestamp
   vote.voter = voterID
   vote.proposal = proposalID
   vote.voteValue = event.params.voteValue

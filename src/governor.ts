@@ -63,6 +63,10 @@ export function handleProposalCreated(event: ProposalCreated): void {
   proposal.againstVotes = BigInt.zero()
   proposal.abstainVotes = BigInt.zero()
   proposal.totalVotes = BigInt.zero()
+  proposal.remoteForVotes = BigInt.zero()
+  proposal.remoteAgainstVotes = BigInt.zero()
+  proposal.remoteAbstainVotes = BigInt.zero()
+  proposal.remoteTotalVotes = BigInt.zero()
   proposal.save()
 
   newProposalStateChange(event, proposalID, ProposalState.CREATED)
@@ -144,6 +148,7 @@ export function handleVoteCast(event: VoteCast): void {
   )
   vote.txnHash = event.transaction.hash
   vote.blockNumber = event.block.number
+  vote.timestamp = event.block.timestamp
   vote.voter = voterID
   vote.proposal = proposalID
   vote.voteValue = event.params.voteValue
