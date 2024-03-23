@@ -101,6 +101,8 @@ dataSources:
           file: ./abis/well.json
         - name: xWELL
           file: ./abis/xwell.json
+        - name: WormholeWELL
+          file: ./abis/well.wormhole.json
       eventHandlers:
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
@@ -126,6 +128,8 @@ dataSources:
           file: ./abis/well.json
         - name: xWELL
           file: ./abis/xwell.json
+        - name: WormholeWELL
+          file: ./abis/well.wormhole.json
       eventHandlers:
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
