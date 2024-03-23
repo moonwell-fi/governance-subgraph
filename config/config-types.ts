@@ -3,6 +3,8 @@ import { BigInt } from "@graphprotocol/graph-ts";
 export class Config {
   constructor(
     public readonly governorAddr: string,
+    public readonly multiGovernorAddr: string,
+    public readonly voteCollectorAddr: string,
     public readonly wormholeAddr: string,
     public readonly timelockAddr: string,
     public readonly WELLAddr: string,
