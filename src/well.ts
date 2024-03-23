@@ -6,12 +6,6 @@ import {
   WELL as WELLContract,
 } from '../generated/WELL/WELL'
 import {
-  xWELL as xWELLContract,
-} from '../generated/xWELL/xWELL'
-import {
-  WormholeWELL as WormholeWELLContract,
-} from '../generated/WormholeWELL/WormholeWELL'
-import {
   snapshotCirculatingSupplyXwell
 } from './xwell'
 import {
@@ -36,12 +30,6 @@ export function snapshotCirculatingSupplyWell(blockTimestamp: i32): void {
   for (let i = 0; i < config.WELLCircSupplyExcludes.length; i++) {
     let excludeAddress = Address.fromString(config.WELLCircSupplyExcludes[i]);
     let balance = contract.balanceOf(excludeAddress);
-    totalSupply = totalSupply.minus(balance);
-  }
-  let WWELLcontract = WormholeWELLContract.bind(Address.fromString(config.WWELLAddr))
-  for (let i = 0; i < config.WELLBaseExtraExcludes.length; i++) {
-    let excludeAddress = Address.fromString(config.WELLBaseExtraExcludes[i]);
-    let balance = WWELLcontract.balanceOf(excludeAddress);
     totalSupply = totalSupply.minus(balance);
   }
   snapshot.circulatingSupply = totalSupply

@@ -12,8 +12,6 @@ export class Config {
     public readonly xWELLAddr: string,
     public readonly xWELLStartBlock: BigInt,
     public readonly xWELLCircSupplyExcludes: Array<string>,
-    public readonly WWELLAddr: string,
-    public readonly WWELLCircSupplyExcludes: Array<string>,
     public readonly lockboxAddr: string,
   ) {}
 }

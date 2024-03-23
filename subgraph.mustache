@@ -133,22 +133,3 @@ dataSources:
           handler: handleDelegateChanged
         - event: DelegateVotesChanged(indexed address,uint256,uint256)
           handler: handleDelegateVotesChanged
-  - kind: ethereum/contract
-    name: WormholeWELL
-    network: {{ network }}
-    source:
-      address: '{{ WWELLAddr }}'
-      abi: WormholeWELL
-      startBlock: {{ WWELLStartBlock }}
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.7
-      language: wasm/assemblyscript
-      file: ./src/wwell.ts
-      entities: []
-      abis:
-        - name: WormholeWELL
-          file: ./abis/well.wormhole.json
-      eventHandlers:
-        - event: Transfer(indexed address,indexed address,uint256)
-          handler: handleTransfer
