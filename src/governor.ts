@@ -52,7 +52,6 @@ export function handleProposalCreated(event: ProposalCreated): void {
   }
   proposal.targets = targets
   proposal.values = event.params.values
-  proposal.signatures = event.params.signatures
   proposal.calldatas = event.params.calldatas
   proposal.startTimestamp = event.params.startTimestamp
   proposal.endTimestamp = event.params.endTimestamp

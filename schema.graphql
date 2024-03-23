@@ -10,6 +10,16 @@ type Governor @entity {
   timelock: Bytes!
 }
 
+type MultiGovernor @entity {
+  id: ID!
+  proposalCount: Int!
+  quorumVotes: BigInt!
+  proposalThreshold: BigInt!
+  votingPeriod: Int!
+  breakGlassGuardian: Bytes!
+  pauseGuardian: Bytes!
+}
+
 type Proposal @entity {
   # proposal id
   id: ID!
@@ -18,7 +28,6 @@ type Proposal @entity {
   proposer: Proposer!
   targets: [Bytes!]!
   values: [BigInt!]!
-  signatures: [String!]!
   calldatas: [Bytes!]!
   startTimestamp: BigInt!
   endTimestamp: BigInt!
@@ -49,6 +58,18 @@ type ProposalStateChange @entity {
   newState: ProposalState!
   queueEta: BigInt # only set this field when newState == QUEUED
   messages: [Message!]! @derivedFrom(field: "proposalStateChange")
+}
+
+type CrossChainVoteTotal @entity {
+  # {source chain}-{proposal id}
+  id: ID!
+  proposal: Proposal!
+  blockNumber: BigInt!
+  sourceChain: BigInt!
+  forVotes: BigInt!
+  againstVotes: BigInt!
+  abstainVotes: BigInt!
+  collectedTimestamp: BigInt!
 }
 
 type Vote @entity {

@@ -10,17 +10,16 @@ import {
   ProposalThresholdChanged,
   QuroumVotesChanged,
   VotingPeriodChanged,
-  BridgeOutFailed,
-  BridgeOutSuccess,
   CrossChainVoteCollected,
   MultiGovernor as MultiGovernorContract,
 } from '../generated/MultiGovernor/MultiGovernor'
 import {
-  Governor,
+  MultiGovernor,
   Proposal,
   ProposalStateChange,
   Proposer,
   Vote,
+  CrossChainVoteTotal,
   Voter,
   Message,
 } from '../generated/schema'
@@ -33,7 +32,7 @@ import {
 } from './helpers'
 
 export function handleProposalCreated(event: ProposalCreated): void {
-  let governor = getOrCreateGovernor()
+  let governor = getOrCreateMultiGovernor()
   governor.proposalCount += 1
   governor.save()
 
@@ -44,7 +43,7 @@ export function handleProposalCreated(event: ProposalCreated): void {
     proposer.save()
   }
 
-  let proposalID = event.params.id.toString()
+  let proposalID = (event.params.id.plus(config.proposalOffset)).toString()
   let proposal = new Proposal(proposalID)
   proposal.proposalID = event.params.id.toI32()
   proposal.proposer = proposerID
@@ -54,10 +53,9 @@ export function handleProposalCreated(event: ProposalCreated): void {
   }
   proposal.targets = targets
   proposal.values = event.params.values
-  proposal.signatures = event.params.signatures
   proposal.calldatas = event.params.calldatas
-  proposal.startTimestamp = event.params.startTimestamp
-  proposal.endTimestamp = event.params.endTimestamp
+  proposal.startTimestamp = event.params.votingStartTime
+  proposal.endTimestamp = event.params.votingEndTime
   proposal.startBlock = event.block.number
   proposal.description = event.params.description
   proposal.canceled = false
@@ -72,7 +70,7 @@ export function handleProposalCreated(event: ProposalCreated): void {
 }
 
 export function handleProposalQueued(event: ProposalQueued): void {
-  let proposalID = event.params.id.toString()
+  let proposalID = (event.params.id.plus(config.proposalOffset)).toString()
   let proposal = Proposal.load(proposalID)
   if (!proposal) {
     log.warning('[handleProposalQueued] proposal {} not found', [proposalID])
@@ -85,7 +83,7 @@ export function handleProposalQueued(event: ProposalQueued): void {
 }
 
 export function handleProposalExecuted(event: ProposalExecuted): void {
-  let proposalID = event.params.id.toString()
+  let proposalID = (event.params.id.plus(config.proposalOffset)).toString()
   let proposal = Proposal.load(proposalID)
   if (!proposal) {
     log.warning('[handleProposalExecuted] proposal {} not found', [proposalID])
@@ -99,7 +97,7 @@ export function handleProposalExecuted(event: ProposalExecuted): void {
 }
 
 export function handleProposalCanceled(event: ProposalCanceled): void {
-  let proposalID = event.params.id.toString()
+  let proposalID = (event.params.id.plus(config.proposalOffset)).toString()
   let proposal = Proposal.load(proposalID)
   if (!proposal) {
     log.warning('[handleProposalCanceled] proposal {} not found', [proposalID])
@@ -112,8 +110,59 @@ export function handleProposalCanceled(event: ProposalCanceled): void {
   newProposalStateChange(event, proposalID, ProposalState.CANCELED)
 }
 
+export function handleProposalRebroadcasted(event: ProposalRebroadcasted): void {
+  let proposalID = (event.params.proposalId.plus(config.proposalOffset)).toString()
+  let proposal = Proposal.load(proposalID)
+  if (!proposal) {
+    log.warning('[handleProposalRebroadcasted] proposal {} not found', [proposalID])
+    return
+  }
+
+  let change = newProposalStateChange(event, proposalID, ProposalState.REBROADCASTED)
+  change.save()
+}
+
+export function handleCrossChainVoteCollected(event: CrossChainVoteCollected): void {
+  let proposalID = (event.params.proposalId.plus(config.proposalOffset)).toString()
+  let proposal = Proposal.load(proposalID)
+  if (!proposal) {
+    log.warning('[handleCrossChainVoteCollected] proposal {} not found', [proposalID])
+    return
+  }
+
+  let crossChainVoteTotalID = (
+    event.params.sourceChain.toString()
+    .concat('-')
+    .concat(proposalID)
+  )
+  let crossChainVoteTotal = CrossChainVoteTotal.load(crossChainVoteTotalID)
+  if (!crossChainVoteTotal) {
+    crossChainVoteTotal = new CrossChainVoteTotal(crossChainVoteTotalID)
+    crossChainVoteTotal.proposal = proposalID
+    crossChainVoteTotal.sourceChain = BigInt.fromU32(event.params.sourceChain)
+    crossChainVoteTotal.forVotes = event.params.forVotes
+    crossChainVoteTotal.againstVotes = event.params.againstVotes
+    crossChainVoteTotal.abstainVotes = event.params.abstainVotes
+    crossChainVoteTotal.collectedTimestamp = event.block.timestamp
+    crossChainVoteTotal.blockNumber = event.block.number
+    proposal.forVotes = proposal.forVotes.plus(event.params.forVotes)
+    proposal.againstVotes = proposal.againstVotes.plus(event.params.againstVotes)
+    proposal.abstainVotes = proposal.abstainVotes.plus(event.params.abstainVotes)
+    proposal.totalVotes = proposal.totalVotes.plus(
+      proposal.totalVotes
+      .plus(event.params.forVotes)
+      .plus(event.params.againstVotes)
+      .plus(event.params.abstainVotes)
+    )
+    crossChainVoteTotal.save()
+    proposal.save()
+  } else {
+    log.warning('[handleCrossChainVoteCollected] crossChainVoteTotal {} already exists in tx hash {}', [crossChainVoteTotalID, event.transaction.hash.toHexString()])
+  }
+}
+
 export function handleVoteCast(event: VoteCast): void {
-  let proposalID = event.params.proposalId.toString()
+  let proposalID = (event.params.proposalId.plus(config.proposalOffset)).toString()
   let proposal = Proposal.load(proposalID)
   if (!proposal) {
     log.warning('[handleVoteCast] proposal {} not found', [proposalID])
@@ -155,70 +204,40 @@ export function handleVoteCast(event: VoteCast): void {
 }
 
 export function handleBreakGlassGuardianChanged(event: BreakGlassGuardianChanged): void {
-  let governor = getOrCreateGovernor()
+  let governor = getOrCreateMultiGovernor()
   governor.breakGlassGuardian = event.params.newValue
   governor.save()
 }
 
 export function handleProposalThresholdChanged(event: ProposalThresholdChanged): void {
-  let governor = getOrCreateGovernor()
+  let governor = getOrCreateMultiGovernor()
   governor.proposalThreshold = event.params.newValue
   governor.save()
 }
 
 export function handleQuorumVotesChanged(event: QuroumVotesChanged): void {
-  let governor = getOrCreateGovernor()
+  let governor = getOrCreateMultiGovernor()
   governor.quorumVotes = event.params.newValue
   governor.save()
 }
 
-export function handleVotingDelayedChanged(event: VotingDelayChanged): void {
-  let governor = getOrCreateGovernor()
-  governor.votingDelay = event.params.newValue.toI32()
-  governor.save()
-}
-
 export function handleVotingPeriodChanged(event: VotingPeriodChanged): void {
-  let governor = getOrCreateGovernor()
+  let governor = getOrCreateMultiGovernor()
   governor.votingPeriod = event.params.newValue.toI32()
   governor.save()
 }
 
-export function handleLogMessagePublished(event: LogMessagePublished): void {
-  if (event.params.sender.toHexString().toLowerCase() != config.timelockAddr.toLowerCase()) {
-    return // only handle messages from our trusted sender (timelock address)
-  }
-  let message = new Message(
-    event.transaction.hash.toHexString(),
-  )
-  message.sender = event.params.sender
-  message.sequence = event.params.sequence
-  message.nonce = event.params.nonce.toI32()
-  message.payload = event.params.payload
-  message.consistencyLevel = event.params.consistencyLevel
-  message.timestamp = event.block.timestamp
-  message.save()
-}
-
-function getOrCreateGovernor(): Governor {
-  let governor = Governor.load('1')
+function getOrCreateMultiGovernor(): MultiGovernor {
+  let governor = MultiGovernor.load('1')
   if (!governor) {
-    let contract = GovernorContract.bind(Address.fromString(config.governorAddr))
-    governor = new Governor('1')
+    let contract = MultiGovernorContract.bind(Address.fromString(config.governorAddr))
+    governor = new MultiGovernor('1')
     governor.proposalCount = 0
-    governor.quorumVotes = getOrElse<BigInt>(contract.try_quorumVotes(), BIGINT_ZERO)
+    governor.quorumVotes = getOrElse<BigInt>(contract.try_quorum(), BIGINT_ZERO)
     governor.proposalThreshold = getOrElse<BigInt>(
       contract.try_proposalThreshold(),
       BIGINT_ZERO,
     )
-    governor.votingDelay = getOrElse<BigInt>(
-      contract.try_votingDelay(),
-      BIGINT_ZERO,
-    ).toI32()
-    governor.proposalMaxOperations = getOrElse<BigInt>(
-      contract.try_proposalMaxOperations(),
-      BIGINT_ZERO,
-    ).toI32()
     governor.votingPeriod = getOrElse<BigInt>(
       contract.try_votingPeriod(),
       BIGINT_ZERO,
@@ -227,8 +246,8 @@ function getOrCreateGovernor(): Governor {
       contract.try_breakGlassGuardian(),
       Address.fromString('0x0000000000000000000000000000000000000000'),
     )
-    governor.timelock = getOrElse<Address>(
-      contract.try_timelock(),
+    governor.pauseGuardian = getOrElse<Address>(
+      contract.try_pauseGuardian(),
       Address.fromString('0x0000000000000000000000000000000000000000'),
     )
     governor.save()
