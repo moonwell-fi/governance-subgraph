@@ -21,8 +21,6 @@ const config = new Config(
     '0x60A0164463f3dC6c27e0AF42D1F64ab8BF225578', // Luke F-GLMR-PARAM (for bridging)'
   ],
   '0x0000000000000000000000000000000000000000',
-  [],
-  '0x0000000000000000000000000000000000000000',
 )
 
 export default config
