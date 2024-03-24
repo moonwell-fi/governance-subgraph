@@ -127,6 +127,7 @@ export function handleVotesEmitted(event: VotesEmitted): void {
   if (!crossChainVoteTotal) {
     crossChainVoteTotal = new CrossChainVoteTotal(crossChainVoteTotalID)
     crossChainVoteTotal.proposal = proposalID
+    crossChainVoteTotal.sourceChain = config.voteCollectorChainID
     crossChainVoteTotal.forVotes = event.params.forVotes
     crossChainVoteTotal.againstVotes = event.params.againstVotes
     crossChainVoteTotal.abstainVotes = event.params.abstainVotes
