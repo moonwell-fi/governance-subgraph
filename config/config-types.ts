@@ -12,6 +12,8 @@ export class Config {
     public readonly WELLAddr: string,
     public readonly WELLStartBlock: BigInt,
     public readonly WELLCircSupplyExcludes: Array<string>,
+    public readonly WELLCircSupplyManualSubtract: BigInt,
+    public readonly WELLCircSupplyManualSubtractEndTimestamp: BigInt,
     public readonly xWELLAddr: string,
     public readonly xWELLStartBlock: BigInt,
     public readonly xWELLCircSupplyExcludes: Array<string>,

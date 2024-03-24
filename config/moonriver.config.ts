@@ -23,6 +23,8 @@ const config = new Config(
     '0x79a1a71786a325db7Fe70bbF080a1ee046F53c74', // Solarbeam Rewarder
     '0x017eFfFd8ABea3B1891f81e7c0E5166458B3584D', // F-MOVR-PARAM
   ],
+  BigInt.fromI64(0),                              // MFAM Circulating Supply Manual Subtract
+  BigInt.fromI32(0),                              // MFAM Circulating Supply Manual Subtract End Timestamp
   '0x0000000000000000000000000000000000000000',   // xMFAM Address
   BigInt.fromI32(2147483646),                     // xMFAM Start Block
   [                                               // xMFAM Circulating Supply Excludes

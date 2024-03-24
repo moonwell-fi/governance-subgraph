@@ -32,6 +32,9 @@ export function snapshotCirculatingSupplyWell(blockTimestamp: i32): void {
     let balance = contract.balanceOf(excludeAddress);
     totalSupply = totalSupply.minus(balance);
   }
+  if (blockTimestamp < config.WELLCircSupplyManualSubtractEndTimestamp.toI32()) {
+    totalSupply = totalSupply.minus(config.WELLCircSupplyManualSubtract);
+  }
   snapshot.circulatingSupply = totalSupply
   snapshot.captureTimestamp = BigInt.fromI32(blockTimestamp)
   snapshot.save()
