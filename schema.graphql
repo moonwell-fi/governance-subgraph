@@ -63,6 +63,7 @@ type Proposal @entity {
   proposer: Proposer!
   targets: [Bytes!]!
   values: [BigInt!]!
+  signatures: [String!]
   calldatas: [Bytes!]!
   startTimestamp: BigInt!
   endTimestamp: BigInt!
