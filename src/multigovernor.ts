@@ -53,7 +53,11 @@ export function handleProposalCreated(event: ProposalCreated): void {
   }
   proposal.targets = targets
   proposal.values = event.params.values
-  proposal.signatures = event.params.calldatas.map(() => '')
+  let signatures: string[] = []
+  for (let i = 0; i < proposal.calldatas.length; i++) {
+    signatures.push('')
+  }
+  proposal.signatures = signatures
   proposal.calldatas = event.params.calldatas
   proposal.startTimestamp = event.params.votingStartTime
   proposal.endTimestamp = event.params.votingEndTime
