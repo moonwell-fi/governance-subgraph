@@ -12,6 +12,8 @@ const config = new Config(
   '0x0000000000000000000000000000000000000000', // WELL Address
   BigInt.fromI32(2147483646),                   // WELL Start Block
   [],                                           // WELL Circulating Supply Excludes
+  BigInt.fromI64(0),                            // WELL Circulating Supply Manual Subtract
+  BigInt.fromI32(0),                            // WELL Circulating Supply Manual Subtract End Timestamp
   '0xE8F339C51cb2700113ec6ef552eE1D6cCA3BfB95', // xWELL Address
   BigInt.fromI32(6643795),                      // xWELL Start Block   
   [                                             // xWELL Circulating Supply Excludes
