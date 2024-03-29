@@ -33,7 +33,10 @@ export function snapshotCirculatingSupplyWell(blockTimestamp: i32): void {
     totalSupply = totalSupply.minus(balance);
   }
   if (blockTimestamp < config.WELLCircSupplyManualSubtractEndTimestamp.toI32()) {
-    totalSupply = totalSupply.minus(config.WELLCircSupplyManualSubtract);
+    log.warning('Manually subtracting {} from total supply of {}', [config.WELLCircSupplyManualSubtract.toString(),totalSupply.toString()])
+    let newTotalSupply = totalSupply.minus(config.WELLCircSupplyManualSubtract);
+    totalSupply = newTotalSupply;
+    log.warning('Total supply after manual subtraction: {}', [totalSupply.toString()])
   }
   snapshot.circulatingSupply = totalSupply
   snapshot.captureTimestamp = BigInt.fromI32(blockTimestamp)
