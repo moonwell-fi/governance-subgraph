@@ -28,7 +28,7 @@ const config = new Config(
     '0x0D45033775b290D69462944289b7A402a651B460', // xWELLLockBox
   ],
   BigInt.fromString("89120732550000000000000000"), // WELL Circulating Supply Manual Subtract
-  BigInt.fromI32(1711690248),                      // WELL Circulating Supply Manual Subtract End Timestamp
+  BigInt.fromI32(1711733448),                      // WELL Circulating Supply Manual Subtract End Timestamp
   '0xA88594D404727625A9437C3f886C7643872296AE',   // xWELL Address
   BigInt.fromI32(5259170),                        // xWELL Start Block
   [                                               // xWELL Circulating Supply Excludes
