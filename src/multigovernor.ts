@@ -54,7 +54,7 @@ export function handleProposalCreated(event: ProposalCreated): void {
   proposal.targets = targets
   proposal.values = event.params.values
   let signatures: string[] = []
-  for (let i = 0; i < proposal.calldatas.length; i++) {
+  for (let i = 0; i < event.params.calldatas.length; i++) {
     signatures.push('')
   }
   proposal.signatures = signatures
@@ -73,6 +73,7 @@ export function handleProposalCreated(event: ProposalCreated): void {
   proposal.remoteAgainstVotes = BigInt.zero()
   proposal.remoteAbstainVotes = BigInt.zero()
   proposal.remoteTotalVotes = BigInt.zero()
+
   proposal.save()
 
   newProposalStateChange(event, proposalID, ProposalState.CREATED)

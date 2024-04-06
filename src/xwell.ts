@@ -47,6 +47,7 @@ export function handleWithdraw(event: Withdraw): void {
     account.votingPower = BIGINT_ZERO
     account.xvotingPower = BIGINT_ZERO
     account.WELLBalance = BIGINT_ZERO
+    account.WWELLBalance = BIGINT_ZERO
     account.xWELLBalance = BIGINT_ZERO
     account.delegatedTo = ADDRESS_ZERO
     account.xdelegatedTo = ADDRESS_ZERO
